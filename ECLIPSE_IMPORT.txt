@@ -1,0 +1,1 @@
+Eclipse -> File -> Import -> Existing Maven Projects -> select backend folder -> Finish.

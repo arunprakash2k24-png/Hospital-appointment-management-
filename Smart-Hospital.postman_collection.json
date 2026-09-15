@@ -1,0 +1,14 @@
+{
+  "info": {
+    "name": "Smart Hospital Appointment API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [{"key":"baseUrl","value":"http://localhost:8080"},{"key":"token","value":""}],
+  "item": [
+    {"name":"Login Patient","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"email\":\"patient@hospital.com\",\"password\":\"Patient@123\"}"},"url":{"raw":"{{baseUrl}}/api/auth/login","host":["{{baseUrl}}"],"path":["api","auth","login"]}}},
+    {"name":"List Doctors","request":{"method":"GET","url":{"raw":"{{baseUrl}}/api/doctors","host":["{{baseUrl}}"],"path":["api","doctors"]}}},
+    {"name":"Book Appointment","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"},{"key":"Authorization","value":"Bearer {{token}}"}],"body":{"mode":"raw","raw":"{\"doctorId\":1,\"appointmentDate\":\"2026-08-20\",\"appointmentTime\":\"10:30:00\",\"reason\":\"Routine consultation\"}"},"url":{"raw":"{{baseUrl}}/api/appointments","host":["{{baseUrl}}"],"path":["api","appointments"]}}},
+    {"name":"My Appointments","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/api/appointments/my","host":["{{baseUrl}}"],"path":["api","appointments","my"]}}},
+    {"name":"Admin Dashboard","request":{"method":"GET","header":[{"key":"Authorization","value":"Bearer {{token}}"}],"url":{"raw":"{{baseUrl}}/api/admin/dashboard","host":["{{baseUrl}}"],"path":["api","admin","dashboard"]}}}
+  ]
+}

@@ -1,1 +1,0 @@
-Open frontend in VS Code and use Live Server, or open index.html directly in a browser.

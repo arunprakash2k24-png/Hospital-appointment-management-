@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Smart Hospital Online Appointment Management System"
+    >
+
+    <title>Smart Hospital | Appointment Management</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>🏥 Smart Hospital</h1>
+            <p>Online Appointment Management System</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ================= LOGIN / REGISTER ================= -->
+        <section id="auth" class="card">
+
+            <div class="card-header">
+                <h2>Patient Login</h2>
+                <p>Login to manage your hospital appointments.</p>
+            </div>
+
+            <form id="loginForm" onsubmit="event.preventDefault(); login();">
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="patient@hospital.com"
+                        value="patient@hospital.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        value="Patient@123"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Login
+                </button>
+
+            </form>
+
+            <p id="authMsg" class="message" role="alert"></p>
+
+            <!-- Registration -->
+            <details class="register-box">
+
+                <summary>
+                    New patient? Create an account
+                </summary>
+
+                <form
+                    id="registerForm"
+                    onsubmit="event.preventDefault(); register();"
+                >
+
+                    <div class="form-group">
+                        <label for="regName">Full Name</label>
+                        <input
+                            id="regName"
+                            type="text"
+                            placeholder="Enter your name"
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regEmail">Email</label>
+                        <input
+                            id="regEmail"
+                            type="email"
+                            placeholder="Enter your email"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regPass">Password</label>
+                        <input
+                            id="regPass"
+                            type="password"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary">
+                        Register
+                    </button>
+
+                </form>
+
+            </details>
+
+        </section>
+
+
+        <!-- ================= APPLICATION ================= -->
+        <section id="app" style="display: none;">
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+
+                <div>
+                    <span class="status-dot"></span>
+                    <span id="welcome">Welcome!</span>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    onclick="logout()"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+
+            <!-- ================= DOCTOR + BOOKING ================= -->
+            <div class="grid">
+
+                <!-- Find Doctor -->
+                <section class="card">
+
+                    <div class="card-header">
+                        <h2>👨‍⚕️ Find a Doctor</h2>
+                        <p>Search doctors by specialization.</p>
+                    </div>
+
+                    <form
+                        id="doctorSearchForm"
+                        onsubmit="event.preventDefault(); loadDoctors();"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="specialization">
+                                Specialization
+                            </label>
+
+                            <input
+                                id="specialization"
+                                type="text"
+                                placeholder="e.g. Cardiology"
+                            >
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            🔍 Search Doctors
+                        </button>
+
+                    </form>
+
+                    <div
+                        id="doctors"
+                        class="results"
+                        aria-live="polite"
+                    >
+                        <p class="empty-state">
+                            Search for doctors to see available doctors.
+                        </p>
+                    </div>
+
+                </section>
+
+
+                <!-- Book Appointment -->
+                <section class="card">
+
+                    <div class="card-header">
+                        <h2>📅 Book Appointment</h2>
+                        <p>Choose a doctor and appointment time.</p>
+                    </div>
+
+                    <form
+                        id="bookingForm"
+                        onsubmit="event.preventDefault(); book();"
+                    >
+
+                        <div class="form-group">
+
+                            <label for="doctorId">
+                                Doctor ID
+                            </label>
+
+                            <input
+                                id="doctorId"
+                                type="number"
+                                min="1"
+                                placeholder="Enter Doctor ID"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="date">
+                                    Appointment Date
+                                </label>
+
+                                <input
+                                    id="date"
+                                    type="date"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="time">
+                                    Appointment Time
+                                </label>
+
+                                <input
+                                    id="time"
+                                    type="time"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="reason">
+                                Reason for Visit
+                            </label>
+
+                            <textarea
+                                id="reason"
+                                rows="3"
+                                placeholder="Briefly describe your reason for visiting..."
+                                required
+                            ></textarea>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success"
+                        >
+                            ✓ Book Appointment
+                        </button>
+
+                    </form>
+
+                    <p
+                        id="bookMsg"
+                        class="message"
+                        role="alert"
+                    ></p>
+
+                </section>
+
+            </div>
+
+
+            <!-- ================= APPOINTMENTS ================= -->
+            <section class="card appointments-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>📋 My Appointments</h2>
+                        <p>View your upcoming and previous appointments.</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="loadAppointments()"
+                    >
+                        🔄 Refresh
+                    </button>
+
+                </div>
+
+                <div
+                    id="appointments"
+                    class="appointments-list"
+                    aria-live="polite"
+                >
+                    <p class="empty-state">
+                        Click Refresh to load your appointments.
+                    </p>
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <p>
+            © 2026 Smart Hospital |
+            Online Appointment Management System
+        </p>
+
+    </footer>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>

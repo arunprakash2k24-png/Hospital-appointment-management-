@@ -1,0 +1,518 @@
+{
+  "info": {
+    "_postman_id": "smart-hospital-api-2026",
+    "name": "Smart Hospital Appointment API",
+    "description": "API testing collection for the Smart Hospital Appointment Management System.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "doctorId",
+      "value": "1"
+    },
+    {
+      "key": "appointmentId",
+      "value": ""
+    }
+  ],
+
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.upsert({",
+          "    key: 'Accept',",
+          "    value: 'application/json'",
+          "});"
+        ]
+      }
+    }
+  ],
+
+  "item": [
+
+    {
+      "name": "🔐 Authentication",
+      "item": [
+
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Patient\",\n  \"email\": \"testpatient@hospital.com\",\n  \"password\": \"Patient@123\",\n  \"role\": \"PATIENT\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Registration request completed', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 409]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Login Patient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@hospital.com\",\n  \"password\": \"Patient@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const data = pm.response.json();",
+                  "",
+                  "pm.test('JWT token received', function () {",
+                  "    pm.expect(data.token).to.be.a('string').and.not.empty;",
+                  "});",
+                  "",
+                  "if (data.token) {",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "}",
+                  "",
+                  "if (data.name) {",
+                  "    pm.collectionVariables.set('patientName', data.name);",
+                  "}",
+                  "",
+                  "if (data.role) {",
+                  "    pm.collectionVariables.set('userRole', data.role);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Login Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@hospital.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Admin login successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const data = pm.response.json();",
+                  "",
+                  "if (data.token) {",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "}",
+                  "",
+                  "if (data.role) {",
+                  "    pm.collectionVariables.set('userRole', data.role);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+
+      ]
+    },
+
+
+    {
+      "name": "👨‍⚕️ Doctors",
+      "item": [
+
+        {
+          "name": "List All Doctors",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/doctors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctors"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Doctors endpoint is available', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const data = pm.response.json();",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});",
+                  "",
+                  "if (Array.isArray(data) && data.length > 0 && data[0].id) {",
+                  "    pm.collectionVariables.set('doctorId', data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Search Doctors - Cardiology",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/doctors?specialization=Cardiology",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "doctors"
+              ],
+              "query": [
+                {
+                  "key": "specialization",
+                  "value": "Cardiology"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Doctor search successful', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+
+      ]
+    },
+
+
+    {
+      "name": "📅 Appointments",
+      "item": [
+
+        {
+          "name": "Book Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctorId\": {{doctorId}},\n  \"appointmentDate\": \"2026-09-20\",\n  \"appointmentTime\": \"10:30:00\",\n  \"reason\": \"Routine consultation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Appointment request processed', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 409]);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    try {",
+                  "        const data = pm.response.json();",
+                  "        if (data.id) {",
+                  "            pm.collectionVariables.set('appointmentId', data.id);",
+                  "        }",
+                  "    } catch (e) {}",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "My Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments",
+                "my"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('My appointments loaded', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const data = pm.response.json();",
+                  "",
+                  "pm.test('Appointments response is an array', function () {",
+                  "    pm.expect(data).to.be.an('array');",
+                  "});",
+                  "",
+                  "if (Array.isArray(data) && data.length > 0 && data[0].id) {",
+                  "    pm.collectionVariables.set('appointmentId', data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/{{appointmentId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments",
+                "{{appointmentId}}",
+                "cancel"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cancel request processed', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204, 400, 404, 409]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+
+      ]
+    },
+
+
+    {
+      "name": "🔐 Authorization Tests",
+      "item": [
+
+        {
+          "name": "My Appointments - No Token",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "appointments",
+                "my"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Unauthorized request is rejected', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([401, 403]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+
+      ]
+    },
+
+
+    {
+      "name": "👑 Admin",
+      "item": [
+
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "dashboard"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Admin dashboard responded', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+
+      ]
+    }
+
+  ]
+}
